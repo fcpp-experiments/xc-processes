@@ -54,7 +54,7 @@ struct var_def_t;
 //! @brief Default tvar for simulations.
 template <>
 struct var_def_t<tvar> {
-    constexpr static size_t value = 10;
+    constexpr static size_t value = 5;
 };
 
 //! @brief Default dens for simulations.

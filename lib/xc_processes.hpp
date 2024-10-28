@@ -144,18 +144,12 @@ FUN_EXPORT spawn_profiler_t = export_list<spawn_t<message, bool>, spawn_t<messag
 //! @brief Makes test for spherical processes.
 GEN(T) void spherical_test(ARGS, common::option<message> const& m, T, bool render = false) { CODE
     spawn_profiler(CALL, tags::spherical<T>{}, [&](message const& m, real_t v){
-        nvalue<bool> fdwav;       
-        bool dest = m.to == node.uid;
         int rnd = counter(CALL);
+        nvalue<bool> fdwav = false;
 
-        if (dest) {
-            fdwav = nvalue<bool>(false);
-        } else if (rnd == 1) {
-            fdwav = nvalue<bool>(false);
+        if (m.to != node.uid and rnd <= 2) {
             fdwav = mod_self(CALL, fdwav, true);
-            fdwav = mod_other(CALL, fdwav, true);
-        } else {
-             fdwav = nvalue<bool>(false);
+            fdwav = mod_other(CALL, fdwav, rnd == 1);
         }
 
         return make_tuple(node.current_time(), fdwav);
@@ -169,21 +163,15 @@ using set_t = std::unordered_set<device_t>;
 //! @brief Makes test for tree processes.
 GEN(T,S) void tree_test(ARGS, common::option<message> const& m, nvalue<device_t> fdneigh, nvalue<device_t> fdparent, nvalue<S> const& fdbelow, size_t set_size, T, int render = -1) { CODE
     spawn_profiler(CALL, tags::tree<T>{}, [&](message const& m, real_t v){
-        nvalue<bool> fdwav;       
-
-        bool dest = m.to == node.uid;
         int rnd = counter(CALL);
+        nvalue<bool> fdwav = false;
 
-        if (dest) {
-            fdwav = nvalue<bool>(false);
-        } else if (rnd == 1) {
+        if (m.to != node.uid and rnd <= 2) {
             nvalue<bool> source_path  = map_hood([&] (device_t d) {return (d == self(CALL, fdparent));}, fdneigh);
             nvalue<bool> dest_path = map_hood([&] (device_t d) {return (d == node.uid);}, fdparent) and map_hood([&] (S b) {return (b.count(m.to) > 0);}, fdbelow);
 
             fdwav = source_path or dest_path;
-            fdwav = mod_self(CALL, fdwav, true);
-        } else {
-            fdwav = nvalue<bool>(false);
+            fdwav = mod_self(CALL, fdwav, rnd == 1);
         }
 
         return make_tuple(node.current_time(), fdwav);
@@ -200,7 +188,7 @@ GEN(T,S) void fc_tree_test(ARGS, common::option<message> const& m, device_t pare
         status s = node.uid == m.to ? status::terminated_output :
                    source_path or dest_path ? status::internal : status::external_deprecated;
         return make_tuple(node.current_time(), s);
-    }, m, 0.3, render); //, set_size + 2*sizeof(trace_t) + sizeof(real_t) + sizeof(device_t), sizeof(trace_t));
+    }, m, 0.3, render);
 }
 //! @brief Exports for the main function.
 FUN_EXPORT fc_tree_test_t = export_list<spawn_profiler_t>;

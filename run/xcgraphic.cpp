@@ -1,7 +1,7 @@
 // Copyright © 2022 Giorgio Audrito. All Rights Reserved.
 
 /**
- * @file graphic.cpp
+ * @file xcgraphic.cpp
  * @brief Runs a single execution of the message dispatch case study with a graphical user interface.
  */
 #include <iostream>
