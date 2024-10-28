@@ -137,6 +137,7 @@ using test_store_t = tuple_store<
 //! @brief Functors for a given test.
 template <template<class> class T, typename S>
 using test_func_t = log_functors<
+    delivery_count<T<S>>,    functor::div<aggregator::sum<delivery_count<T<S>>>, distribution::constant<n<1>>>,
     //avg_delay<T<S>>,    functor::div<aggregator::sum<delivery_count<T<S>>>, distribution::constant<n<1>>>,
     avg_delay<T<S>>,    functor::div<aggregator::sum<first_delivery_tot<T<S>>>, aggregator::sum<delivery_count<T<S>>>>,
     avg_proc<T<S>>,     functor::div<functor::diff<aggregator::sum<tot_proc<T<S>>>>, distribution::constant<i<devices>>>
@@ -179,7 +180,8 @@ using single_plot_t = plot::split<S, plot::join<Ts>...>;
 template <typename S, size_t t0 = 0>
 using row_plot_t = plot::join<
 single_plot_t<S, lines_t<avg_proc, noaggr>>,
-single_plot_t<S, lines_t<avg_delay, noaggr>>
+single_plot_t<S, lines_t<avg_delay, noaggr>>,
+single_plot_t<S, lines_t<delivery_count, noaggr>>
 >;
 #else
 template <typename S, size_t t0 = 0>
