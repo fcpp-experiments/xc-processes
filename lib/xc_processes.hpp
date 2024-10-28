@@ -139,7 +139,7 @@ GEN(T,G,S) void spawn_profiler(ARGS, T, G&& process, S&& key_set, real_t v, bool
     proc_stats(CALL, r, render, T{});
 }
 //! @brief Export list for spawn_profiler.
-FUN_EXPORT spawn_profiler_t = export_list<spawn_t<message, bool>, proc_stats_t, nvalue<bool>>;
+FUN_EXPORT spawn_profiler_t = export_list<spawn_t<message, bool>, spawn_t<message, status>, proc_stats_t, nvalue<bool>>;
 
 //! @brief Makes test for spherical processes.
 GEN(T) void spherical_test(ARGS, common::option<message> const& m, T, bool render = false) { CODE
@@ -192,6 +192,19 @@ GEN(T,S) void tree_test(ARGS, common::option<message> const& m, nvalue<device_t>
 }
 FUN_EXPORT tree_test_t = export_list<spawn_profiler_t, double, monotonic_distance_t, bool, int>;
 
+//! @brief Makes test for FC tree processes.
+GEN(T,S) void fc_tree_test(ARGS, common::option<message> const& m, device_t parent, S const& below, size_t set_size, T, int render = -1) { CODE
+    spawn_profiler(CALL, tags::tree<T>{}, [&](message const& m, real_t v){
+        bool source_path = any_hood(CALL, nbr(CALL, parent) == node.uid) or node.uid == m.from;
+        bool dest_path = below.count(m.to) > 0;
+        status s = node.uid == m.to ? status::terminated_output :
+                   source_path or dest_path ? status::internal : status::external_deprecated;
+        return make_tuple(node.current_time(), s);
+    }, m, 0.3, render); //, set_size + 2*sizeof(trace_t) + sizeof(real_t) + sizeof(device_t), sizeof(trace_t));
+}
+//! @brief Exports for the main function.
+FUN_EXPORT fc_tree_test_t = export_list<spawn_profiler_t>;
+
 using set_t = std::unordered_set<device_t>;
 
 //! @brief Main case study function.
@@ -233,6 +246,7 @@ MAIN() {
     os << below;
 
     tree_test(CALL, m, fdneigh, fdparent, fdbelow, os.size(), xc{});
+    fc_tree_test(CALL, m, parent, below, os.size(), fc{});
 
     #endif
 

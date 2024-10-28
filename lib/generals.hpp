@@ -97,6 +97,9 @@ namespace tags {
     //! @brief XC processes.
     struct xc {};
 
+    //! @brief FC processes.
+    struct fc {};
+
     //! @brief Legacy termination policy.
     struct legacy {};
 

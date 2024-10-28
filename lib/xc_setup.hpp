@@ -164,6 +164,7 @@ using lines_t = plot::join<
 #endif
 #ifndef NOTREE
     test_lines_t<T, A, tree, xc>,
+    test_lines_t<T, A, tree, fc>,
 #endif
     plot::none
 >;
@@ -252,6 +253,7 @@ DECLARE_OPTIONS(list,
 #endif
 #ifndef NOTREE
     test_option_t<tree, xc>,
+    test_option_t<tree, fc>,
 #endif
     // data initialisation
     init<
