@@ -102,7 +102,7 @@ GEN(T) void proc_stats(ARGS, message_log_type const& nm, bool render, T) {
     }
     // stats on delivery success
     old(node, call_point, message_log_type{}, [&](message_log_type m){
-        for (auto const& x : nm) {
+        for (auto const& x : nm) if (x.first.to == node.uid) {
             if (m.count(x.first)) {
 #ifdef ALLPLOTS
                 node.storage(repeat_count<T>{}) += 1;
@@ -246,7 +246,7 @@ MAIN() {
     os << below;
 
     tree_test(CALL, m, fdneigh, fdparent, fdbelow, os.size(), xc{});
-    //fc_tree_test(CALL, m, parent, below, os.size(), fc{});
+    fc_tree_test(CALL, m, parent, below, os.size(), fc{});
 
     #endif
 
