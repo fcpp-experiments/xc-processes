@@ -175,11 +175,16 @@ template <typename S, typename... Ts>
 using single_plot_t = plot::split<S, plot::join<Ts>...>;
 
 //! @brief Overall row of plots.
+#ifndef GRAPHICS
 template <typename S, size_t t0 = 0>
 using row_plot_t = plot::join<
 single_plot_t<S, lines_t<avg_proc, noaggr>>,
 single_plot_t<S, lines_t<avg_delay, noaggr>>
 >;
+#else
+template <typename S, size_t t0 = 0>
+using row_plot_t = single_plot_t<S, lines_t<avg_proc, noaggr>>;
+#endif
 
 // plot::join<
 // #ifdef ALLPLOTS
@@ -210,12 +215,10 @@ using multi_filter_t = typename multi_filter<plot::split<common::type_sequence<T
 
 //! @brief Overall plot document (one page for every variable).
 using plot_t = plot::join<
-#ifndef GRAPHICS
-    multi_filter_t<row_plot_t<tvar, 50>,   dens, hops, speed>,
-    multi_filter_t<row_plot_t<dens, 50>,   tvar, hops, speed>,
-    multi_filter_t<row_plot_t<hops, 50>,   tvar, dens, speed>,
-    multi_filter_t<row_plot_t<speed, 50>,  tvar, dens, hops>,
-#endif
+//     multi_filter_t<row_plot_t<tvar, 50>,   dens, hops, speed>,
+//     multi_filter_t<row_plot_t<dens, 50>,   tvar, hops, speed>,
+//     multi_filter_t<row_plot_t<hops, 50>,   tvar, dens, speed>,
+//     multi_filter_t<row_plot_t<speed, 50>,  tvar, dens, hops>,
     multi_filter_t<row_plot_t<plot::time>, tvar, dens, hops, speed>
 >;
 
