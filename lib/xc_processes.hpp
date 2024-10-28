@@ -180,6 +180,34 @@ GEN(T,S) void tree_test(ARGS, common::option<message> const& m, nvalue<device_t>
 }
 FUN_EXPORT tree_test_t = export_list<spawn_profiler_t, double, monotonic_distance_t, bool, int>;
 
+
+//! @brief Standard deviation for distance estimations.
+constexpr size_t dist_dev = 30;
+//! @brief Generating distribution for distance estimations.
+std::weibull_distribution<real_t> dist_distr = distribution::make<std::weibull_distribution>(real_t(1), real_t(dist_dev*0.01));
+
+//! @brief Adjusted nbr_dist value accounting for errors.
+FUN field<real_t> adjusted_nbr_dist(ARGS) {
+    return node.nbr_dist() * rand_hood(CALL, dist_distr) + node.storage(tags::speed{}) * comm / period * node.nbr_lag();
+}
+//! @brief Wave-like termination logic.
+template <typename node_t, template<class> class T>
+void termination_logic(ARGS, status& s, real_t v, message const& m, T<tags::wispp>) {
+    bool terminating = s == status::terminated_output;
+    bool terminated = nbr(CALL, terminating, [&](field<bool> nt){
+        return any_hood(CALL, nt) or terminating;
+    });
+    bool source = m.from == node.uid and old(CALL, true, false);
+    double ds = monotonic_distance(CALL, source, adjusted_nbr_dist(CALL));
+    double dt = monotonic_distance(CALL, source, node.nbr_lag());
+    bool slow = ds < v * comm / period * (dt - period);
+    if (terminated or slow) {
+        if (s == status::terminated_output) s = status::border_output;
+        if (s == status::internal) s = status::border;
+        if (s == status::internal_output) s = status::border_output;
+    }
+}
+
 //! @brief Makes test for FC tree processes.
 GEN(T,S) void fc_tree_test(ARGS, common::option<message> const& m, device_t parent, S const& below, size_t set_size, T, int render = -1) { CODE
     spawn_profiler(CALL, tags::tree<T>{}, [&](message const& m, real_t v){
@@ -187,6 +215,7 @@ GEN(T,S) void fc_tree_test(ARGS, common::option<message> const& m, device_t pare
         bool dest_path = below.count(m.to) > 0;
         status s = node.uid == m.to ? status::terminated_output :
                    source_path or dest_path ? status::internal : status::external_deprecated;
+        termination_logic(CALL, s, v, m, tags::tree<tags::wispp>{});
         return make_tuple(node.current_time(), s);
     }, m, 0.3, render);
 }
