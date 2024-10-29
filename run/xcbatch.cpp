@@ -42,8 +42,17 @@ int main() {
                 &p
             )
     );
-    // Runs the given simulations.
-    batch::run(comp_t{}, init_list);
+    std::cout << "/*\n";
+    std::cout << "side: " << side 
+              << "\ndevices: " << devices
+              << "\nspeed: " << speed
+              << "\n";
+    {
+        // Runs the given simulations.
+        batch::run(comp_t{}, init_list);
+    }
+    std::cout << "*/\n";
+
     // Builds the resulting plots.
     std::cout << plot::file("xcbatch", p.build(), {{"MAX_CROP", "0.5"}});
     return 0;
