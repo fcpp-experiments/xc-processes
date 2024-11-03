@@ -8,8 +8,8 @@
 #ifndef FCPP_REPLICATED_H_
 #define FCPP_REPLICATED_H_
 
-#include "lib/past_ctl.hpp"
-#include "lib/slcs.hpp"
+#include "lib/coordination/past_ctl.hpp"
+#include "lib/coordination/slcs.hpp"
 #include "lib/coordination/time.hpp"
 
 

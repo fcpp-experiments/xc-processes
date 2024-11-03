@@ -16,7 +16,7 @@
  */
 namespace fcpp {
 
-//! @brief Number of people in the area.
+//! @brief Number of people in the argit@github.com:fcpp-experiments/xc-processes.gitea.
 constexpr size_t node_num = 150;
 //! @brief Dimensionality of the space.
 constexpr size_t dim = 2;
@@ -76,7 +76,8 @@ using namespace coordination::tags;
 //! @brief Description of the round schedule.
 using round_s = sequence::periodic<
     distribution::interval_n<times_t, 0, 1>,    // uniform time in the [0,1] interval for start
-    distribution::weibull_n<times_t, 10, 1, 10> // weibull-distributed time for interval (10/10=1 mean, 1/10=0.1 deviation)
+    distribution::weibull_n<times_t, 10, 1, 10>,  // weibull-distributed time for interval (10/10=1 mean, 1/10=0.1 deviation)
+    distribution::constant_n<times_t, 70>
 >;
 //! @brief The sequence of network snapshots (one every simulated second).
 using log_s = sequence::periodic_n<1, 0, 1, 70>;
