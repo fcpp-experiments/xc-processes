@@ -15,7 +15,7 @@ For any issues with reproducing the experiments, please contact [Giorgio Audrito
 
 ## Setup
 
-The next sections contain the setup instructions based on the CMake build system for the various supported OSs and virtual containers. Jump to the section dedicated to your system of choice and ignore the others.
+The next sections contain the setup instructions for the various supported OSs. Jump to the section dedicated to your system of choice and ignore the others.
 
 ### Windows
 
@@ -65,6 +65,11 @@ To install them, assuming you have the [brew](https://brew.sh) package manager, 
 xcode-select --install
 brew install cmake asymptote doxygen
 ```
+### Virtual Machines
+
+If you use a VM with a graphical interface, refer to the section for the operating system installed on it.
+
+**Warning:** the graphical simulations are based on OpenGL, and common Virtual Machine software (e.g., VirtualBox) has faulty support for OpenGL. If you rely on a virtual machine for graphical simulations, it might work provided that you select hardware virtualization (as opposed to software virtualization). However, it is recommended to use the native OS whenever possible.
 
 ### Graphical User Interface
 
