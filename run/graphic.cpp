@@ -1,12 +1,13 @@
 // Copyright © 2022 Giorgio Audrito. All Rights Reserved.
 
 /**
- * @file graphic.cpp
+ * @file xcgraphic.cpp
  * @brief Runs a single execution of the message dispatch case study with a graphical user interface.
  */
+#include <iostream>
 
-#include "lib/process_management.hpp"
-#include "lib/simulation_setup.hpp"
+#include "lib/xc_processes.hpp"
+#include "lib/xc_setup.hpp"
 
 using namespace fcpp;
 
@@ -20,19 +21,21 @@ int main() {
     int speed = option::var_def<option::speed>;
     int side = hops * (2*dens)/(2*dens+1.0) * comm / sqrt(2.0) + 0.5;
     int devices = dens*side*side/(3.141592653589793*comm*comm) + 0.5;
+    double infospeed = (0.08*dens - 0.7) * speed * 0.01 + 0.075*dens*dens - 1.6*dens + 11;
+    std::cout << "IS: " << infospeed << std::endl;
     {
         // The network object type (interactive simulator with given options).
         using net_t = component::interactive_simulator<option::list>::net;
         // The initialisation values (simulation name, non-deterministic threshold, device speed, plotter object).
-        auto init_v = common::make_tagged_tuple<option::name, option::end_time, option::tvar, option::dens, option::hops, option::speed, option::side, option::devices, option::seed, option::plotter>(
+        auto init_v = common::make_tagged_tuple<option::name, option::tvar, option::dens, option::hops, option::speed, option::side, option::devices, option::infospeed, option::seed, option::plotter>(
             "Dispatch of Peer-to-peer Messages (" + to_string(dens) + " dev/neigh, " + to_string(hops) + " hops, " + to_string(speed) + "% speed, " + to_string(tvar) + "% tvar)",
-            1000,
             tvar,
             dens,
             hops,
             speed,
             side,
             devices,
+            infospeed,
             1,
             &p
         );
@@ -43,6 +46,6 @@ int main() {
     }
     // Plot simulation results.
     std::cout << "*/\n";
-    std::cout << plot::file("graphic", p.build());
+    std::cout << plot::file("xcgraphic", p.build());
     return 0;
 }

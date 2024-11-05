@@ -1,47 +1,59 @@
-// Copyright © 2023 Giorgio Audrito. All Rights Reserved.
+// Copyright © 2022 Giorgio Audrito. All Rights Reserved.
 
 /**
- * @file batch.cpp
- * @brief Runs multiple executions of the message dispatch case study non-interactively from the command line, producing overall plots.
+ * @file xcbatch.cpp
+ * @brief Runs a single execution of the message dispatch case study with a graphical user interface.
  */
+#include <iostream>
 
-#include "lib/process_management.hpp"
-#include "lib/simulation_setup.hpp"
+#include "lib/xc_processes.hpp"
+#include "lib/xc_setup.hpp"
 
 using namespace fcpp;
 
 //! @brief Number of identical runs to be averaged.
-constexpr int runs = 1000;
+constexpr int runs = 100;
 
 int main() {
     // Construct the plotter object.
     option::plot_t p;
+    // Parameter values
+    int tvar = option::var_def<option::tvar>;
+    int hops = option::var_def<option::hops>;
+    int dens = option::var_def<option::dens>;
+    int speed = option::var_def<option::speed>;
+    int side = hops * (2*dens)/(2*dens+1.0) * comm / sqrt(2.0) + 0.5;
+    int devices = dens*side*side/(3.141592653589793*comm*comm) + 0.5;
+    double infospeed = (0.08*dens - 0.7) * speed * 0.01 + 0.075*dens*dens - 1.6*dens + 11;
     // The component type (batch simulator with given options).
     using comp_t = component::batch_simulator<option::list>;
     // The list of initialisation values to be used for simulations.
     auto init_list = batch::make_tagged_tuple_sequence(
-            batch::arithmetic<option::seed>(runs + 1, 40*runs, 1, 1, runs), // 40x random seeds for the default setting
-            batch::arithmetic<option::tvar>(0,   40,   1,      (int)option::var_def<option::tvar>), // 41 different temporal variances
-            batch::arithmetic<option::dens>(8.0, 28.0, 0.5, (double)option::var_def<option::dens>), // 41 different densities
-            batch::arithmetic<option::hops>(4.0, 24.0, 0.5, (double)option::var_def<option::hops>), // 41 different hop sizes
-            batch::arithmetic<option::speed>(0,  40,   1,      (int)option::var_def<option::speed>),// 41 different speeds
-            // computes area side from dens and hops
-            batch::formula<option::side, size_t>([](auto const& x) {
-                double d = common::get<option::dens>(x);
-                double h = common::get<option::hops>(x);
-                return h * (2*d)/(2*d+1) * comm / sqrt(2.0) + 0.5;
-            }),
-            // computes device number from dens and side
-            batch::formula<option::devices, size_t>([](auto const& x) {
-                double d = common::get<option::dens>(x);
-                double s = common::get<option::side>(x);
-                return d*s*s/(3.141592653589793*comm*comm) + 0.5;
-            }),
-            batch::constant<option::output, option::end_time, option::plotter>(nullptr, 50, &p) // reference to the plotter object
+            batch::arithmetic<option::seed>(1, runs, 1),
+            batch::constant<option::tvar, option::dens, option::hops, option::speed, option::side, option::devices, option::infospeed, option::output, option::plotter>(
+                tvar,
+                dens,
+                hops,
+                speed,
+                side,
+                devices,
+                infospeed,
+                nullptr,
+                &p
+            )
     );
-    // Runs the given simulations.
-    batch::run(comp_t{}, init_list);
+    std::cout << "/*\n";
+    std::cout << "side: " << side 
+              << "\ndevices: " << devices
+              << "\nspeed: " << speed
+              << "\n";
+    {
+        // Runs the given simulations.
+        batch::run(comp_t{}, init_list);
+    }
+    std::cout << "*/\n";
+
     // Builds the resulting plots.
-    std::cout << plot::file("batch", p.build());
+    std::cout << plot::file("xcbatch", p.build(), {{"MAX_CROP", "0.5"}});
     return 0;
 }
