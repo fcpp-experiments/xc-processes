@@ -1,6 +1,5 @@
-# FCPP Process Management
-
-Project for developing and demonstrating process management techniques.
+# FCPP XC Processes
+Project for developing and demonstrating eXchange Calculus processes in FCPP.
 
 All commands below are assumed to be issued from the cloned git repository folder.
 For any issues with reproducing the experiments, please contact [Giorgio Audrito](mailto:giorgio.audrito@unito.it).
@@ -93,14 +92,21 @@ Hovering on a node will also display its UID in the top-left corner.
 
 ## Simulations
 
-### Graphic 
+### Message Delivery (Graphic) 
 
-```./make.sh window```
+```./make.sh gui run -DNOTREE graphic```
 
-Runs a single test simulation with GUI for each of the following scenarios:
-- spherical topology
-- tree topology
-- tree topology exploiting Bloom filters
+Runs a single test simulation with GUI for the spherical scenario, single message sent.
+
+```./make.sh gui run -DNOTREE -DMULTI_TEST graphic```
+
+Runs a single test simulation with GUI for the spherical scenario, multiple messages sent.
+
+```./make.sh gui run -DNOSPHERE graphic```
+
+Runs a single test simulation with GUI for the tree scenario, single message sent (comparing spawnXC and spawnFC).
+
+For all three commands above, produced graphics can be found in `plot/graphic.pdf`.
 
 #### Parameters (cf. plots)
 
@@ -111,13 +117,11 @@ Runs a single test simulation with GUI for each of the following scenarios:
 
 #### Metrics (cf. plots)
 
-- `dcount` (delivery count): % of messages that arrived to destination 
+- `dcount` (delivery count): number of messages that arrived to destination 
 - `aproc` (average processes): average number of process instances (i.e., for a single process, the average number of devices running it)
-- `asiz` (average size) 
-- `mmsiz` (max message size)
 - `adel` (average delay)
 
-See also the namespace `tag` in file `lib/generals.hpp` (where, e.g., struct `max_msg_size` turns into extracted metric `mmsize`).
+See also the namespace `tag` in file `lib/generals.hpp`.
 
 ### Batch 
 
@@ -131,51 +135,3 @@ Runs a **huge** number of experiments without GUI for each of the following scen
 The resulting PDF plots will be produced in the `plot/` directory.
 
 For *parameters* and *metrics* see the previous section.
-
-### Case Study
-
-```./make.sh gui run -O -DGRAPHIC [-DBLOOM] case_study```
-
-The optional ```BLOOM``` parameter enables Bloom filters.
-
-The essence of the Case Study (target ```case_study```) consists of the following scenario, based on a network of nodes:
-
-- when idle, a node _n_ may decide to broadcast a discovery message for a service _S_
-- each node _m_ offering service _S_ replies with an _offer_ (each node in the network implements exactly one service taken from a set {S1, ..., Sk})
-- if node _n_ does not receive an offer for service _S_ within a given interval, its wait times out and it returns to an idle state
-- the _first_ offer received by _n_ is accepted and an accept message is sent to its sender _m_; the other offers are _ignored_
-- upon the acceptance of its offer, node _m_ starts sending a _file_ (sequence) of _N_ data messages to node _n_, sending _one message per round_ (currently _N=1_)
-- after a given interval, the nodes whose offers are ignored time out and return to an idle state
-- after sending the last (only) message, _m_ returns to an idle state
-- after recognizing that it has received the last message, _n_ returns to an idle state
-
-Overall, the above steps are summarized by the following state machine:
-
-![nodes-automa](https://github.com/fcpp-experiments/process-management/assets/1214215/65f1cbb6-2db8-42bf-b968-8de679e87d60)
-
-#### Configuration
-
-The case study can be _configured_ through many settings:
-
-- basic settings in ```case_study.cpp```. These settings are the ones that are varied in the _systematic tests_.
-  - **dens** density of the network as avg number of neighbours
-  - **hops** network diameter
-  - **speed** maximum speed of devices as a percentage of the communication speed
-  - **tvar** variance of the round durations, as a percentage of the avg
-- further settings in  ```simulation_setup.hpp```. These settings are shared with the targets ```graphic``` and ```batch``` of the _systematic tests_.
-  - **period** avg duration of a round
-  - **comm** communication radius
-  - **end** end of simulated time
-  - **timeout_coeff** coefficient to be multiplied to **hops** to get the timeout value
-  - **max_svc_id** number _k_ of different services {S1,...,Sk}
-  - **max_file_size** maximum size (in messages) of the file sent by service to client (currently ***ignored*** since file size is fixed to _1_)
-
-#### Restrictions
-
-The following are current restrictions to the scenario that may be lifted in future versions.
-
-- at any round, each device is in exactly one of the poassible states _IDLE_, _DISCO_, _OFFER_, _SERVED_, _SERVING_ of the above state machine. This means that a device that is, e.g., *OFFER*-ing its service cannot at the same being _SERVING_ some previous request, etc.
-- only _one discovery message_ is actually generated during the _whole use case execution_. The request is created by the device with id _(N-1)_ (where _N_ is the number of devices) at time (round) _T=11_ (this delay has the purpose to let the tree topology computation stabilize)
-- the offer accepted is always the first one received by a device in the _DISCO_ state; in case two or more offers are received at the same time by a device in _DISCO_ state, one of them is arbitrarily chosen to be accepted
-- the file sent by a service after its offer has been accepted has a length of exactly _1 message_
-
