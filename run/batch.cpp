@@ -54,6 +54,6 @@ int main() {
     std::cout << "*/\n";
 
     // Builds the resulting plots.
-    std::cout << plot::file("xcbatch", p.build(), {{"MAX_CROP", "0.5"}});
+    std::cout << plot::file("batch", p.build(), {{"MAX_CROP", "0.5"}});
     return 0;
 }

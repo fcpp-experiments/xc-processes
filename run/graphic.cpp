@@ -46,6 +46,6 @@ int main() {
     }
     // Plot simulation results.
     std::cout << "*/\n";
-    std::cout << plot::file("xcgraphic", p.build());
+    std::cout << plot::file("graphic", p.build());
     return 0;
 }
