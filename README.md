@@ -94,15 +94,15 @@ Hovering on a node will also display its UID in the top-left corner.
 
 ### Message Delivery (Graphic) 
 
-```./make.sh gui run -DNOTREE graphic```
+```./make.sh gui run -DNOTREE -O graphic```
 
 Runs a single test simulation with GUI for the spherical scenario, single message sent.
 
-```./make.sh gui run -DNOTREE -DMULTI_TEST graphic```
+```./make.sh gui run -DNOTREE -DMULTI_TEST -O graphic```
 
 Runs a single test simulation with GUI for the spherical scenario, multiple messages sent.
 
-```./make.sh gui run -DNOSPHERE graphic```
+```./make.sh gui run -DNOSPHERE -O graphic```
 
 Runs a single test simulation with GUI for the tree scenario, single message sent (comparing spawnXC and spawnFC).
 
@@ -123,15 +123,28 @@ For all three commands above, produced graphics can be found in `plot/graphic.pd
 
 See also the namespace `tag` in file `lib/generals.hpp`.
 
-### Batch 
+### Message Delivery (Batch) 
 
-```./make.sh plots```
+```./make.sh run -DNOTREE -O batch```
 
-Runs a **huge** number of experiments without GUI for each of the following scenarios:
-- spherical topology
-- tree topology
-- tree topology exploiting Bloom filters
+Runs 100 simulations for the spherical scenario, single message sent.
 
-The resulting PDF plots will be produced in the `plot/` directory.
+```./make.sh run -DNOTREE -DMULTI_TEST -O batch```
+
+Runs 100 simulations for the spherical scenario, multiple messages sent.
+
+```./make.sh run -DNOSPHERE -O batch```
+
+Runs 100 simulations for the tree scenario, single message sent (comparing spawnXC and spawnFC).
+
+For all three commands above, produced graphics can be found in `plot/batch.pdf`.
 
 For *parameters* and *metrics* see the previous section.
+
+### Replicated PastCTL (Graphic) 
+
+```./make.sh gui run -O replicated_pastctl```
+
+Runs a single test simulation with GUI for the replicated PastCTL scenario.
+
+Produced graphics can be found in `plot/replicated_pastctl.pdf`.
