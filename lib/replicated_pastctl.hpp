@@ -16,18 +16,10 @@
  */
 namespace fcpp {
 
-//! @brief Number of people in the area.
-constexpr size_t node_num = 150;
 //! @brief Dimensionality of the space.
 constexpr size_t dim = 2;
 //! @brief The maximum communication range between nodes.
 constexpr size_t communication_range = 100;
-//! @brief The diagonal size.
-constexpr size_t diag = 1000;
-//! @brief The maximum x coordinate.
-constexpr size_t hi_x = 800;
-//! @brief The maximum y coordinate.
-constexpr size_t hi_y = 600;
 //! @brief End of simulated time.
 constexpr size_t end = 100;
 
