@@ -11,4 +11,5 @@ project(
 
 fcpp_target(./run/graphic.cpp ON)
 fcpp_target(./run/batch.cpp   OFF)
-fcpp_target(./run/replicated_pastctl.cpp ON)
+fcpp_target(./run/repctl_graphic.cpp ON)
+fcpp_target(./run/repctl_batch.cpp OFF)
