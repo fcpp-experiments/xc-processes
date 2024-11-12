@@ -143,8 +143,24 @@ For *parameters* and *metrics* see the previous section.
 
 ### Replicated PastCTL (Graphic) 
 
-```./make.sh gui run -O replicated_pastctl```
+```./make.sh gui run -O repctl_graphic```
 
 Runs a single test simulation with GUI for the replicated PastCTL scenario.
 
-Produced graphics can be found in `plot/replicated_pastctl.pdf`.
+Produced graphics can be found in `plot/repctl_graphic.pdf`.
+
+#### Metrics (cf. plots)
+- `error` average percentage of time with wrong values of critics 
+- `value` value of critics along time
+
+For parameters see the previous sections.
+
+### Replicated PastCTL (Batch) 
+
+```./make.sh run -O repctl_batch```
+
+Runs 2400 test simulations for the replicated PastCTL scenario.
+
+Produced graphics can be found in `plot/repctl_batch.pdf`.
+
+For parameters and metrics see the previous section.
